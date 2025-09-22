@@ -1,0 +1,1895 @@
+:root {
+  --accent: #d32f2f;
+  --accent-dark: #b71c1c;
+  --accent-light: #ffcdd2;
+  --success: #4caf50;
+  --warning: #ff9800;
+  --danger: #f44336;
+  --text-primary: #263238;
+  --text-secondary: #607D8B;
+  --background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --surface: #FFFFFF;
+  --border: #E1E5E9;
+  --shadow: 0 2px 8px rgba(211, 47, 47, 0.08);
+  --shadow-lg: 0 4px 20px rgba(211, 47, 47, 0.12);
+  --border-radius: 12px;
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --gradient-primary: linear-gradient(135deg, #d32f2f 0%, #f44336 100%);
+  --surface-overlay: rgba(255, 255, 255, 0.95);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* تحسين الأداء من خلال تقليل repaint و reflow */
+body {
+  font-family: "Cairo", "Segoe UI", Tahoma, Arial, sans-serif;
+  background: var(--background);
+  background-attachment: fixed;
+  color: var(--text-primary);
+  direction: rtl;
+  line-height: 1.6;
+  overflow-x: hidden;
+  min-height: 100vh;
+  position: relative;
+  will-change: auto; /* تحسين للأداء */
+  transform: translateZ(0); /* تسريع الـ GPU */
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--surface-overlay);
+  z-index: -1;
+  backdrop-filter: blur(1px);
+}
+
+/* شاشة التحميل */
+.loading-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--gradient-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  animation: fadeIn 0.5s ease-out;
+}
+
+.loading-container {
+  text-align: center;
+  color: white;
+  animation: slideUp 0.8s ease-out;
+}
+
+.logo-loading {
+  margin-bottom: 20px;
+  animation: pulse 2s infinite;
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
+}
+
+.loading-title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin-bottom: 8px;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.loading-subtitle {
+  font-size: 1.1rem;
+  opacity: 0.95;
+  margin-bottom: 40px;
+}
+
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.spinner-ring {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.9);
+  animation: bounce 1.4s infinite ease-in-out both;
+}
+
+.spinner-ring:nth-child(1) { animation-delay: -0.32s; }
+.spinner-ring:nth-child(2) { animation-delay: -0.16s; }
+
+.loading-text {
+  font-size: 1rem;
+  opacity: 0.9;
+}
+
+.main-content {
+  opacity: 0;
+}
+
+.main-content.hidden {
+  display: none;
+}
+
+.main-content:not(.hidden) {
+  opacity: 1;
+  animation: fadeIn 0.5s ease-out;
+}
+
+/* الهيدر - مُحسّن بحجم أكبر */
+.app-header {
+  background: var(--gradient-primary);
+  color: white;
+  padding: 28px 28px; /* زيادة الـ padding أكثر */
+  box-shadow: 0 4px 20px rgba(211, 47, 47, 0.15);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 20px; /* زيادة المسافة أكثر */
+  margin-bottom: 20px; /* زيادة المسافة السفلية أكثر */
+}
+
+.logo-icon {
+  background: rgba(255,255,255,0.15);
+  padding: 9px 11px;; /* زيادة الـ padding أكثر */
+  border-radius: 14px; /* زيادة الـ border radius أكثر */
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.2);
+}
+
+/* تكبير أيقونة الشعار أكثر */
+.logo-icon svg {
+  width: 38px !important;
+  height: 38px !important;
+}
+
+/* تكبير أيقونات الأزرار */
+.header-btn i {
+  font-size: 1.1rem;
+}
+
+/* التأكد من أن الـ SVG يتجاوب مع الأحجام المختلفة */
+.app-header svg {
+  transition: all 0.3s ease;
+}
+
+.logo-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.app-title {
+  font-size: 1.6rem; /* تكبير العنوان الرئيسي أكثر */
+  font-weight: bold;
+  line-height: 1.2;
+}
+
+.app-subtitle {
+  font-size: 0.8rem; /* تكبير العنوان الفرعي أكثر */
+  opacity: 0.9;
+}
+
+.header-actions {
+  display: flex;
+  gap: 12px; /* تقليل المسافة قليلاً للأزرار الأربعة */
+  flex-wrap: nowrap; /* منع نزول الأزرار لسطر جديد */
+  justify-content: center; /* توسيط الأزرار */
+  overflow-x: auto; /* في حالة الشاشات الصغيرة جداً */
+}
+
+.header-btn {
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: white;
+  padding: 8px 16px; /* تقليل الـ padding للأزرار لتوفير مساحة */
+  border-radius: 12px; /* زيادة الـ border radius أكثر */
+  font-size: 0.95rem; /* تقليل حجم النص قليلاً */
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px; /* تقليل المسافة بين الأيقونة والنص */
+  transition: var(--transition);
+  backdrop-filter: blur(10px);
+  min-height: 44px; /* تقليل الحد الأدنى للارتفاع */
+  flex-shrink: 0; /* منع تقليص الأزرار */
+}
+
+/* تكبير أيقونات الأزرار أكثر */
+.header-btn i {
+  font-size: 1.2rem;
+}
+
+.header-btn:hover {
+  background: rgba(255,255,255,0.2);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+/* زر التحميل عند وجود ملف Excel محمل */
+.header-btn.excel-loaded {
+  background: linear-gradient(135deg, #28a745, #20c997) !important;
+  color: white !important;
+  border-color: rgba(255,255,255,0.3) !important;
+  box-shadow: 0 3px 12px rgba(40, 167, 69, 0.3) !important;
+  animation: subtleGlow 2s ease-in-out infinite alternate;
+}
+
+.header-btn.excel-loaded:hover {
+  background: linear-gradient(135deg, #1e7e34, #17a2b8) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4) !important;
+}
+
+.header-btn.excel-loaded i {
+  animation: checkPulse 1.5s ease-in-out infinite;
+}
+
+/* أنيميشن لزر التحميل بعد تحميل ملف Excel */
+@keyframes subtleGlow {
+  0% {
+    box-shadow: 0 3px 12px rgba(40, 167, 69, 0.3);
+  }
+  100% {
+    box-shadow: 0 3px 12px rgba(40, 167, 69, 0.5);
+  }
+}
+
+@keyframes checkPulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+.header-btn.danger:hover {
+  background: var(--danger);
+  border-color: var(--danger);
+}
+
+/* الإحصائيات - في صف واحد */
+.stats-container {
+  display: flex;
+  gap: 12px;
+  padding: 20px;
+  margin-bottom: 10px;
+  overflow-x: hidden;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.stat-card {
+  background: var(--surface);
+  padding: 16px;
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: var(--transition);
+  border-left: 4px solid var(--accent);
+  border: 1px solid var(--border);
+  flex: 1;
+  min-width: 0;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+  border-color: #d5d5d5;
+}
+
+.stat-card.available {
+  border-left-color: var(--success);
+}
+
+.stat-card.unavailable {
+  border-left-color: var(--danger);
+}
+
+.stat-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--accent-light);
+  color: var(--accent);
+  font-size: 1.2rem;
+}
+
+.stat-card.available .stat-icon {
+  background: rgba(76, 175, 80, 0.1);
+  color: var(--success);
+}
+
+.stat-card.unavailable .stat-icon {
+  background: rgba(244, 67, 54, 0.1);
+  color: var(--danger);
+}
+
+.stat-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-number {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--text-primary);
+}
+
+.stat-label {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+/* القسم الرئيسي */
+.main-section {
+  padding: 0 20px 20px;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.section-header h2 {
+  color: var(--text-primary);
+  font-size: 1.3rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.search-container {
+  position: relative;
+  flex: 1;
+  max-width: 300px;
+}
+
+.search-input {
+  width: 100%;
+  padding: 10px 40px 10px 12px;
+  border: 2px solid var(--border);
+  border-radius: 25px;
+  font-size: 0.9rem;
+  transition: var(--transition);
+  background: var(--surface);
+  color: var(--text-primary);
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(211, 47, 47, 0.1);
+}
+
+.search-icon {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-secondary);
+}
+
+/* حالة فارغة */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-secondary);
+  background: var(--surface);
+  border-radius: var(--border-radius);
+  border: 1px solid var(--border);
+}
+
+.empty-icon {
+  font-size: 4rem;
+  margin-bottom: 20px;
+  opacity: 0.4;
+  color: var(--accent);
+}
+
+.empty-state h3 {
+  font-size: 1.3rem;
+  margin-bottom: 8px;
+  color: var(--text-primary);
+}
+
+.empty-state p {
+  margin-bottom: 24px;
+  font-size: 0.95rem;
+}
+
+.btn-primary {
+  background: var(--gradient-primary);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: var(--border-radius);
+  font-size: 0.95rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: var(--transition);
+  box-shadow: var(--shadow);
+}
+
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* قائمة الأكواد */
+.barcode-list {
+  list-style: none;
+  display: grid;
+  gap: 12px;
+}
+
+.barcode-item {
+  background: var(--surface);
+  border-radius: var(--border-radius);
+  padding: 16px;
+  box-shadow: var(--shadow);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: var(--transition);
+  border-right: 4px solid var(--success);
+  border: 1px solid var(--border);
+  flex-wrap: nowrap !important;
+  flex-direction: row !important;
+}
+
+.barcode-item:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--accent-light);
+}
+
+.barcode-item.unavailable {
+  border-right-color: var(--danger);
+}
+
+.code {
+  font-weight: 900; /* جعل الخط أكثر سمكاً */
+  font-size: 1.3rem; /* زيادة حجم الخط */
+  font-family: 'Courier New', monospace;
+  color: var(--text-primary);
+  min-width: 0;
+  flex-shrink: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 200px; /* تحديد حد أقصى للعرض */
+}
+
+.controls-inline {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.status {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  background: rgba(76, 175, 80, 0.1);
+  color: var(--success);
+  border: 1px solid rgba(76, 175, 80, 0.2);
+  white-space: nowrap;
+}
+
+.status.unavailable {
+  background: rgba(244, 67, 54, 0.1);
+  color: var(--danger);
+  border: 1px solid rgba(244, 67, 54, 0.2);
+}
+
+.item-menu {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: 2.0rem;
+  padding: 8px;
+  border-radius: 50%;
+  transition: var(--transition);
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.item-menu:hover {
+  background: var(--accent-light);
+  color: var(--accent);
+}
+
+.item-menu[data-action="delete"]:hover {
+  background: rgba(244, 67, 54, 0.1);
+  color: var(--danger);
+}
+
+/* المودال */
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(211, 47, 47, 0.1);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 1000;
+  /* منع السكرول أثناء فتح المودال */
+  overflow: hidden;
+}
+
+/* منع سكرول الـ body عند فتح مودال الماسح - محسّن وأقوى */
+body.modal-open {
+  overflow: hidden !important;
+  position: fixed !important;
+  width: 100% !important;
+  height: 100% !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  -webkit-overflow-scrolling: touch !important;
+  /* حماية إضافية لأجهزة iOS */
+  -webkit-touch-callout: none !important;
+  -webkit-user-select: none !important;
+  -webkit-tap-highlight-color: transparent !important;
+  /* منع الزوم على أجهزة iOS */
+  touch-action: none !important;
+}
+
+/* تطبيق نفس التثبيت على html عند وجود modal-open */
+body.modal-open html,
+body.modal-open {
+  overflow: hidden !important;
+  position: fixed !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* إصلاح مشكلة تحريك الصفحة على iOS - محسّن */
+@supports (-webkit-touch-callout: none) {
+  body.modal-open {
+    position: fixed !important;
+    overflow: hidden !important;
+    width: 100% !important;
+    height: 100% !important;
+    top: 0 !important;
+    -webkit-overflow-scrolling: touch !important;
+    -webkit-touch-callout: none !important;
+    -webkit-user-select: none !important;
+    touch-action: none !important;
+  }
+  
+  /* تثبيت إضافي لـ body عند فتح المودال */
+  body.modal-open * {
+    -webkit-overflow-scrolling: touch !important;
+    -webkit-touch-callout: none !important;
+    -webkit-user-select: none !important;
+  }
+  
+  /* تثبيت خاص للإدخال اليدوي - يسمح بالكتابة فقط */
+  body.modal-open .manual-input,
+  html.scroll-locked .manual-input {
+    -webkit-user-select: text !important;
+    user-select: text !important;
+    touch-action: manipulation !important;
+  }
+  
+  /* تثبيت إضافي لجميع العناصر عند فتح المودال */
+  body.modal-open *,
+  html.scroll-locked * {
+    -webkit-overflow-scrolling: touch !important;
+    -webkit-touch-callout: none !important;
+    -webkit-user-select: none !important;
+    touch-action: none !important;
+    position: relative !important;
+  }
+}
+
+body.modal-open .app-header {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  z-index: 99 !important;
+}
+
+body.modal-open .main-content {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  overflow: hidden !important;
+}
+
+.modal.hidden {
+  display: none;
+}
+
+.modal-content {
+  background: var(--surface);
+  border-radius: var(--border-radius);
+  width: 100%;
+  max-width: 450px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow-lg);
+  animation: modalSlideUp 0.3s ease-out;
+  border: 1px solid var(--border);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid var(--border);
+  background: var(--gradient-primary);
+  color: white;
+  border-radius: var(--border-radius) var(--border-radius) 0 0;
+}
+
+.modal-header h2 {
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.modal-header h2.no-icon {
+    gap: 0;
+}
+
+.modal-body {
+    padding: 20px;
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    padding: 10px 20px 20px;
+    border-top: 1px solid var(--border);
+}
+
+.modal-footer button {
+    margin-left: 10px;
+}
+
+.modal-footer button.btn-cancel {
+  background-color: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--border-radius);
+  padding: 0.75rem 1.25rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: var(--transition);
+  box-shadow: none;
+  font-weight: 500;
+}
+
+.modal-footer button.btn-cancel:hover {
+  background-color: var(--accent-light);
+  color: var(--accent);
+  border-color: var(--accent-light);
+  box-shadow: var(--shadow);
+}
+
+.modal-footer button.btn-cancel:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--accent-light);
+}
+
+.modal-content.small {
+    max-width: 380px;
+}
+
+.close-btn {
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: white;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition);
+}
+
+.close-btn:hover {
+  background: rgba(255,255,255,0.25);
+}
+
+/* التبويبات */
+.tabs {
+  display: flex;
+  background: var(--background);
+  margin: 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.tab {
+  flex: 1;
+  padding: 16px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  transition: var(--transition);
+  border-bottom: 3px solid transparent;
+}
+
+.tab.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+  background: var(--surface);
+}
+
+.tab-content {
+  display: none;
+  padding: 20px;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+/* الكاميرا - محسّنة للأداء */
+.camera-container {
+  position: relative;
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  background: #263238;
+  border: 2px solid var(--border);
+  transform: translateZ(0); /* تسريع GPU */
+}
+
+video, .reader {
+  width: 100%;
+  height: 280px;
+  object-fit: cover;
+  display: block;
+  backface-visibility: hidden; /* تحسين الأداء */
+  will-change: auto;
+}
+
+.camera-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.scan-frame {
+  width: 200px;
+  height: 200px;
+  border: 2px solid var(--accent);
+  border-radius: 12px;
+  position: relative;
+  animation: scanPulse 2s infinite;
+}
+
+.scan-frame::before,
+.scan-frame::after {
+  content: '';
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border: 3px solid white;
+}
+
+.scan-frame::before {
+  top: -3px;
+  right: -3px;
+  border-bottom: none;
+  border-left: none;
+}
+
+.scan-frame::after {
+  bottom: -3px;
+  left: -3px;
+  border-top: none;
+  border-right: none;
+}
+
+.flash-btn {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  background: rgba(211, 47, 47, 0.9);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: white;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  transition: var(--transition);
+  backdrop-filter: blur(10px);
+}
+
+/* شعار التحذير للباركودات غير المعروفة */
+.rescan-warning {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(255, 193, 7, 0.95);
+  color: #212529;
+  padding: 20px;
+  border-radius: 15px;
+  text-align: center;
+  box-shadow: 0 8px 32px rgba(255, 193, 7, 0.4);
+  border: 2px solid #ffc107;
+  min-width: 200px;
+  backdrop-filter: blur(10px);
+  animation: warningPulse 1s ease-in-out;
+  z-index: 10;
+}
+
+.rescan-warning.hidden {
+  display: none;
+}
+
+.warning-icon {
+  font-size: 3rem;
+  margin-bottom: 10px;
+  animation: shake 0.5s ease-in-out;
+}
+
+.warning-text {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-bottom: 8px;
+  color: #212529;
+}
+
+.warning-subtext {
+  font-size: 0.9rem;
+  color: #6c757d;
+}
+
+/* إشعار النجاح في منتصف الكاميرا */
+.success-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(40, 167, 69, 0.95);
+  color: white;
+  padding: 25px;
+  border-radius: 15px;
+  text-align: center;
+  box-shadow: 0 8px 32px rgba(40, 167, 69, 0.5);
+  border: 2px solid #28a745;
+  min-width: 250px;
+  backdrop-filter: blur(10px);
+  animation: successPulse 1s ease-in-out;
+  z-index: 10;
+}
+
+.success-overlay.hidden {
+  display: none;
+}
+
+.success-icon {
+  font-size: 4rem;
+  margin-bottom: 12px;
+  animation: successBounce 0.6s ease-in-out;
+}
+
+.success-text {
+  font-size: 1.4rem;
+  font-weight: bold;
+  margin-bottom: 8px;
+  color: white;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.success-subtext {
+  font-size: 1rem;
+  color: rgba(255,255,255,0.9);
+}
+
+@keyframes successPulse {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.05);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+@keyframes successBounce {
+  0%, 100% {
+    transform: scale(1);
+  }
+  25% {
+    transform: scale(1.1);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  75% {
+    transform: scale(1.1);
+  }
+}
+
+@keyframes warningPulse {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.05);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+@keyframes shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-5px);
+  }
+  75% {
+    transform: translateX(5px);
+  }
+}
+
+.flash-btn:hover {
+  background: var(--accent);
+  transform: scale(1.1);
+}
+
+.scan-instruction {
+  text-align: center;
+  color: #435a65;
+  font-size: 0.9rem;
+  margin-top: 16px;
+  padding: 12px;
+  background: #ebebeb;
+  border-radius: 8px;
+  border: 1px solid rgb(73 73 73 / 20%);
+}
+
+/* الإدخال اليدوي - محسّن ومع حماية إضافية */
+.manual-input-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 10px 0; /* إضافة padding لتحسين العرض */
+  position: relative; /* ضمان الاستقرار */
+}
+
+/* حماية إضافية عند فتح المودال */
+body.modal-open .manual-input-container {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 1000 !important;
+  background: var(--surface) !important;
+  border-radius: var(--border-radius) !important;
+  padding: 15px !important;
+  margin-bottom: 10px !important;
+  box-shadow: var(--shadow-lg) !important;
+}
+
+.input-group {
+  display: flex;
+  gap: 12px;
+  align-items: stretch; /* تحسين محاذاة العناصر */
+}
+
+.manual-input {
+  flex: 1;
+  padding: 14px 16px; /* زيادة padding قليلاً لتحسين اللمس */
+  border: 2px solid var(--border);
+  border-radius: var(--border-radius);
+  font-size: 1.1rem; /* زيادة حجم النص لسهولة الاستخدام */
+  transition: var(--transition);
+  background: var(--surface);
+  color: var(--text-primary);
+  font-family: 'Courier New', monospace; /* خط مونوسبيس للأرقام */
+  letter-spacing: 1px; /* تباعد بين الأحرف */
+  /* منع زوم الصفحة على iOS عند التركيز */
+  -webkit-text-size-adjust: 100% !important;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  /* حماية إضافية لمنع الزوم */
+  touch-action: manipulation !important;
+  -webkit-tap-highlight-color: transparent !important;
+}
+
+/* تحسين خاص لأجهزة iOS لمنع زوم الإدخال */
+.manual-input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(211, 47, 47, 0.1);
+  /* ضمان عدم زوم الصفحة */
+  font-size: 1.1rem !important;
+  -webkit-text-size-adjust: none !important;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  /* حماية إضافية عند التركيز */
+  touch-action: manipulation !important;
+  -webkit-touch-callout: none !important;
+  -webkit-tap-highlight-color: transparent !important;
+}
+
+/* حماية إضافية للإدخال اليدوي عند فتح المودال */
+body.modal-open .manual-input {
+  position: relative !important;
+  z-index: 1001 !important;
+  /* ضمان الاستقرار عند فتح المودال */
+  -webkit-user-select: text !important;
+  user-select: text !important;
+  touch-action: manipulation !important;
+}
+
+.btn-add {
+  background: var(--gradient-primary);
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: var(--transition);
+  white-space: nowrap;
+  box-shadow: var(--shadow);
+}
+
+.btn-add:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-lg);
+}
+
+.input-hint {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #435a65;
+  font-size: 0.85rem;
+  background: #ebebeb;
+  padding: 12px;
+  border-radius: 8px;
+  border-right: 3px solid var(--accent);
+  border: 1px solid rgb(73 73 73 / 20%);
+}
+
+/* Toast - مُحسّن الموضع */
+.toast {
+  position: fixed;
+  bottom: 120px; /* رفع الإشعار لأعلى من 20px إلى 120px */
+  left: 50%;
+  transform: translateX(-50%); /* توسيط الإشعار أفقياً */
+  background: var(--surface);
+  color: var(--text-primary);
+  padding: 16px 24px; /* زيادة padding قليلاً */
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-lg);
+  z-index: 2000;
+  opacity: 0;
+  transition: var(--transition);
+  max-width: 350px; /* زيادة العرض الأقصى */
+  min-width: 280px; /* تحديد حد أدنى للعرض */
+  font-size: 0.95rem; /* زيادة حجم النص قليلاً */
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--accent);
+  text-align: center; /* توسيط النص */
+  font-weight: 500; /* جعل النص أوضح */
+}
+
+.toast.show {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+/* زر التثبيت */
+#installBtn {
+  background-color: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: var(--border-radius);
+  padding: 0.75rem 1.25rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: var(--transition);
+  box-shadow: var(--shadow);
+}
+
+#installBtn:hover {
+  background-color: var(--accent-dark);
+  box-shadow: var(--shadow-lg);
+}
+
+#installBtn:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--accent-light);
+}
+
+.install-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: var(--gradient-primary);
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 25px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  box-shadow: var(--shadow-lg);
+  transition: var(--transition);
+  z-index: 1000;
+}
+
+.install-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(211, 47, 47, 0.3);
+}
+
+/* تحسين الرسوم المتحركة للأداء الأفضل */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeOut {
+  from { 
+    opacity: 1;
+    transform: scale(1);
+  }
+  to { 
+    opacity: 0;
+    transform: scale(0.98); /* تقليل التأثير */
+  }
+}
+
+@keyframes slideUp {
+  from { 
+    opacity: 0;
+    transform: translateY(20px); /* تقليل المسافة */
+  }
+  to { 
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.03); } /* تقليل التأثير */
+}
+
+@keyframes bounce {
+  0%, 80%, 100% { 
+    transform: scale(0);
+  } 40% { 
+    transform: scale(1.0);
+  }
+}
+
+@keyframes scanPulse {
+  0%, 100% { 
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% { 
+    opacity: 0.8; /* تقليل التأثير */
+    transform: scale(1.01);
+  }
+}
+
+@keyframes modalSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.98); /* تقليل التأثير */
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* الاستجابة للشاشات الصغيرة */
+@media (max-width: 768px) {
+  .loading-title {
+    font-size: 2rem;
+  }
+  
+  .app-header {
+    padding: 20px 20px; /* تقليل قليلاً للشاشات المتوسطة */
+  }
+  
+  .logo {
+    gap: 14px;
+    margin-bottom: 14px;
+  }
+  
+  .logo-icon {
+    padding: 8px 10px;
+  }
+  
+  .logo-icon svg {
+    width: 28px !important;
+    height: 28px !important;
+  }
+  
+  .app-title {
+    font-size: 1.2rem;
+  }
+  
+  .app-subtitle {
+    font-size: 0.6rem;
+  }
+  
+  .header-actions {
+    justify-content: center;
+    gap: 6px; /* تقليل أكثر */
+    flex-wrap: nowrap; /* منع نزول الأزرار لسطر جديد */
+    overflow-x: auto; /* إضافة تمرير أفقي إذا لزم الأمر */
+  }
+  
+  .header-btn {
+    padding: 8px 10px; /* تقليل padding أكثر */
+    font-size: 0.8rem;
+    min-height: 36px;
+  }
+  
+  .header-btn span {
+    display: none; /* إخفاء النص في الشاشات المتوسطة */
+  }
+  
+  .header-btn i {
+    font-size: 1rem;
+  }
+  
+  .stats-container {
+    display: flex;
+    padding: 16px;
+    gap: 8px;
+  }
+  
+  .stat-card {
+    padding: 12px 8px;
+    flex-direction: column;
+    text-align: center;
+    gap: 8px;
+  }
+  
+  .stat-icon {
+    width: 32px;
+    height: 32px;
+    font-size: 1rem;
+  }
+  
+  .stat-number {
+    font-size: 1.2rem;
+  }
+  
+  .stat-label {
+    font-size: 0.7rem;
+  }
+  
+  .main-section {
+    padding: 0 16px 16px;
+  }
+  
+  .section-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .search-container {
+    max-width: none;
+  }
+  
+  .barcode-item {
+    padding: 14px 12px;
+    flex-direction: row !important;
+    align-items: center !important;
+    flex-wrap: nowrap !important;
+    gap: 8px;
+  }
+  
+  .code {
+    font-size: 0.95rem;
+    font-weight: bold;
+    max-width: 120px;
+    min-width: 0;
+    flex-shrink: 1;
+  }
+  
+  .controls-inline {
+    justify-content: flex-end;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+  
+  .status {
+    font-size: 0.8rem;
+    padding: 3px 8px;
+  }
+  
+  .item-menu {
+    width: 32px;
+    height: 32px;
+    font-size: 1.2rem;
+  }
+  
+  .modal-content {
+    margin: 10px;
+    max-height: calc(100vh - 20px);
+  }
+  
+  .camera-container {
+    margin: -10px;
+  }
+  
+  video, .reader {
+    height: 240px;
+  }
+  
+  .scan-frame {
+    width: 150px;
+    height: 150px;
+  }
+  
+  .input-group {
+    flex-direction: column;
+  }
+  
+  .tab span {
+    display: none;
+  }
+  
+  .empty-state {
+    padding: 40px 20px;
+  }
+  
+  .empty-icon {
+    font-size: 3rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .loading-title {
+    font-size: 1.8rem;
+  }
+  
+  .loading-subtitle {
+    font-size: 1rem;
+  }
+  
+  .app-title {
+    font-size: 1.0rem; /* تحديث الحجم للتناسب مع التكبير الجديد */
+  }
+  
+  .app-subtitle {
+    font-size: 0.55rem;
+  }
+  
+  .app-header {
+    padding: 18px 18px; /* تقليل للشاشات الصغيرة */
+  }
+  
+  .logo {
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  
+  .logo-icon {
+    padding: 6px 8px;
+  }
+  
+  .logo-icon svg {
+    width: 24px !important;
+    height: 24px !important;
+  }
+  
+  .header-btn {
+    padding: 3px 8px; /* تقليل padding أكثر */
+    font-size: 0.75rem;
+    min-height: 32px;
+  }
+  
+  .header-btn i {
+    font-size: 0.8rem;
+  }
+  
+  .header-actions {
+    gap: 4px; /* تقليل gap أكثر */
+    flex-wrap: nowrap; /* منع نزول الأزرار لسطر جديد */
+    overflow-x: auto;
+  }
+  
+  .stats-container {
+    display: flex;
+    gap: 8px;
+  }
+  
+  .stat-card {
+    flex-direction: row;
+    text-align: right;
+  }
+  
+  .barcode-item {
+    padding: 12px 10px;
+    gap: 6px;
+  }
+  
+  .code {
+    font-size: 1.1rem; /* زيادة حجم الخط للموبايل */
+    font-weight: 900; /* جعل الخط أكثر سمكاً */
+    max-width: 160px; /* زيادة المساحة المتاحة */
+  }
+  
+  .controls-inline {
+    gap: 6px;
+  }
+  
+  .status {
+    font-size: 0.75rem;
+    padding: 2px 6px;
+  }
+  
+  .item-menu {
+    width: 28px;
+    height: 28px;
+    font-size: 1.1rem;
+  }
+  
+  .toast {
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
+    max-width: none;
+  }
+  
+  .install-btn {
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 360px) {
+  .app-header {
+    padding: 16px 12px; /* تقليل padding الجانبي أكثر */
+  }
+  
+  .logo {
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  
+  .logo-icon {
+    padding: 4px 6px;
+  }
+  
+  .logo-icon svg {
+    width: 20px !important;
+    height: 20px !important;
+  }
+  
+  .app-title {
+    font-size: 0.8rem;
+  }
+  
+  .app-subtitle {
+    font-size: 0.5rem;
+  }
+  
+  .header-btn {
+    padding: 2px 6px; /* تقليل padding للحد الأدنى */
+    font-size: 0.7rem;
+    min-height: 28px;
+    width: 28px; /* جعل الأزرار مربعة */
+    justify-content: center;
+  }
+  
+  .header-btn span {
+    display: none !important; /* إخفاء النص تماماً */
+  }
+  
+  .header-btn i {
+    font-size: 0.75rem;
+  }
+  
+  .header-actions {
+    gap: 2px; /* أصغر gap ممكن */
+    flex-wrap: nowrap; /* منع نزول الأزرار لسطر جديد */
+    overflow-x: auto;
+  }
+  
+  .barcode-item {
+    padding: 10px 8px;
+    gap: 4px;
+  }
+  
+  .code {
+    font-size: 1rem; /* حجم جيد للشاشات الصغيرة */
+    font-weight: 900; /* جعل الخط أكثر سمكاً */
+    max-width: 140px; /* مساحة كافية للعرض */
+  }
+  
+  .controls-inline {
+    gap: 4px;
+  }
+  
+  .status {
+    font-size: 0.7rem;
+    padding: 2px 4px;
+  }
+  
+  .item-menu {
+    width: 24px;
+    height: 24px;
+    font-size: 1.0rem;
+  }
+}
+
+/* للشاشات الصغيرة جداً */
+@media (max-width: 320px) {
+  .app-header {
+    padding: 12px 8px;
+  }
+  
+  .header-actions {
+    gap: 1px;
+    padding: 0 2px;
+  }
+  
+  .header-btn {
+    padding: 2px 4px;
+    min-height: 24px;
+    width: 24px;
+    font-size: 0.65rem;
+  }
+  
+  .header-btn i {
+    font-size: 0.7rem;
+  }
+  
+  .logo {
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+  
+  .app-title {
+    font-size: 0.75rem;
+  }
+  
+  .app-subtitle {
+    font-size: 0.45rem;
+  }
+}
+
+
+/* تحسينات إضافية للأداء */
+.barcode-item,
+.stat-card,
+.header-btn,
+.btn-primary,
+.btn-add {
+  will-change: transform;
+}
+
+/* تحسين التباين للوضع المظلم */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --text-primary: #263238;
+    --text-secondary: #607D8B;
+    --background: #F8F9FA;
+    --surface: #FFFFFF;
+    --border: #E1E5E9;
+  }
+}
+
+/* تحسين إمكانية الوصول */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* تحسينات استجابة أبسط للإحصائيات */
+@media (max-width: 480px) {
+  /* تكبير الشعار والأزرار للموبايل */
+  .logo-icon {
+    padding: 11px 13px;
+    border-radius: 16px;
+  }
+  
+  .logo-icon svg {
+    width: 40px !important;
+    height: 40px !important;
+  }
+  
+  .app-title {
+    font-size: 1.7rem !important;
+  }
+  
+  .app-subtitle {
+    font-size: 0.8rem !important;
+  }
+  
+  .header-btn {
+    padding: 12px 22px !important;
+    font-size: 1.2rem !important;
+    min-height: 52px !important;
+    border-radius: 14px !important;
+  }
+  
+  .header-btn i {
+    font-size: 1.3rem !important;
+  }
+  
+  .header-actions {
+    gap: 18px !important;
+  }
+  
+  /* الإحصائيات */
+  .stats-container {
+    padding: 16px;
+    gap: 8px;
+  }
+  
+  .stat-card {
+    padding: 12px;
+  }
+  
+  .stat-icon {
+    width: 32px;
+    height: 32px;
+    font-size: 1rem;
+  }
+  
+  .stat-number {
+    font-size: 1.3rem;
+  }
+  
+  .stat-label {
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 360px) {
+  /* تكبير أكثر للشاشات الصغيرة جداً */
+  .logo-icon {
+    padding: 13px 15px;
+    border-radius: 18px;
+  }
+  
+  .logo-icon svg {
+    width: 42px !important;
+    height: 42px !important;
+  }
+  
+  .app-title {
+    font-size: 1.7rem !important;
+  }
+  
+  .app-subtitle {
+    font-size: 1.0rem !important;
+  }
+  
+  .header-btn {
+    padding: 14px 24px !important;
+    font-size: 1.3rem !important;
+    min-height: 56px !important;
+    border-radius: 16px !important;
+  }
+  
+  .header-btn i {
+    font-size: 1.4rem !important;
+  }
+  
+  .header-actions {
+    gap: 20px !important;
+  }
+  
+  /* الإحصائيات */
+  .stats-container {
+    padding: 12px;
+    gap: 6px;
+  }
+  
+  .stat-card {
+    padding: 10px;
+  }
+  
+  .stat-icon {
+    width: 28px;
+    height: 28px;
+    font-size: 0.9rem;
+  }
+  
+  .stat-number {
+    font-size: 1.2rem;
+  }
+  
+  .stat-label {
+    font-size: 0.7rem;
+  }
+}
+
+/* تحسين الطباعة */
+@media print {
+  .loading-screen,
+  .app-header,
+  .stats-container,
+  .modal,
+  .toast,
+  .install-btn {
+    display: none !important;
+  }
+  
+  .barcode-item {
+    break-inside: avoid;
+    box-shadow: none;
+    border: 1px solid #ccc;
+  }
+}
+
+/* تثبيت الصفحة بشكل أقوى للإدخال اليدوي */
+body.modal-open {
+  overflow: hidden !important;
+  position: fixed !important;
+  width: 100% !important;
+  height: 100% !important;
+  -webkit-overflow-scrolling: touch;
+}
+
+html.modal-open {
+  overflow: hidden !important;
+  position: fixed !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* منع التمرير في جميع العناصر عند تفعيل modal-open */
+body.modal-open * {
+  overflow: hidden !important;
+}
+
+/* تحسين خاص للإدخال اليدوي على الجوال */
+@supports (-webkit-touch-callout: none) {
+  body.modal-open {
+    position: fixed !important;
+    overflow: hidden !important;
+    -webkit-overflow-scrolling: touch;
+    height: 100vh !important;
+    width: 100vw !important;
+  }
+}
+
+/* تحسينات إضافية لمنع التمرير عند إضافة عناصر متعددة */
+/* تثبيت العناصر الرئيسية عند قفل التمرير */
+body.modal-open .app-header,
+html.scroll-locked .app-header {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  z-index: 99 !important;
+}
+
+body.modal-open .main-content,
+html.scroll-locked .main-content {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  overflow: hidden !important;
+}
+
+/* منع أي إمكانية للتمرير في قائمة الباركود */
+body.modal-open .barcode-list,
+html.scroll-locked .barcode-list {
+  overflow: visible !important;
+  max-height: none !important;
+  position: relative !important;
+}
+
+/* تثبيت خاص لحاوي الإدخال اليدوي - دائماً في الأعلى */
+body.modal-open .manual-input-container,
+html.scroll-locked .manual-input-container {
+  position: sticky !important;
+  top: 60px !important; /* بعد الـ header */
+  left: 0 !important;
+  right: 0 !important;
+  z-index: 95 !important;
+  background: var(--surface) !important;
+  border-bottom: 1px solid var(--border) !important;
+  padding: 15px !important;
+  margin: 0 !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
+}
+
+/* ضمان عدم تأثر الإدخال اليدوي بالتمرير */
+body.modal-open .manual-input,
+html.scroll-locked .manual-input {
+  position: relative !important;
+  z-index: 96 !important;
+  width: 100% !important;
+  -webkit-user-select: text !important;
+  user-select: text !important;
+  touch-action: manipulation !important;
+}
